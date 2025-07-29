@@ -1,0 +1,38 @@
+{
+  "name": "sports-app",
+  "version": "1.0.0",
+  "description": "A sports app for linking up in real life and creating tournaments.",
+  "main": "App.tsx",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.28.2",
+    "react": "17.0.1",
+    "react-native": "0.64.2",
+    "react-navigation": "^4.4.4",
+    "react-navigation-stack": "^1.10.3",
+    "typescript": "^4.4.4"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.1",
+    "@types/react-native": "^0.64.2",
+    "eslint": "^7.32.0",
+    "jest": "^27.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/sports-app.git"
+  },
+  "keywords": [
+    "sports",
+    "tournaments",
+    "react-native"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
