@@ -1,24 +1,46 @@
 import React, { useState } from "react";
 import { SafeAreaView, View, Text, Button, StyleSheet } from "react-native";
 import AccountCreation from "./AccountCreation";
+import AccountEdit from "./AccountEdit";
 
 export default function App() {
   const [accountCreated, setAccountCreated] = useState(false);
   const [username, setUsername] = useState("");
   const [count, setCount] = useState(0);
+  const [editing, setEditing] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
       {!accountCreated ? (
-        <AccountCreation onAccountCreated={(uname) => { setAccountCreated(true); setUsername(uname); }} />
+        <AccountCreation
+          onAccountCreated={(uname) => {
+            setAccountCreated(true);
+            setUsername(uname);
+          }}
+        />
       ) : (
         <View style={styles.counterContainer}>
-          <Text style={styles.counterText}>Welcome, {username}!</Text>
-          <Text style={styles.counterText}>Counter: {count}</Text>
-          <View style={styles.buttonRow}>
-            <Button title="-" onPress={() => setCount(count - 1)} />
-            <Button title="+" onPress={() => setCount(count + 1)} />
-          </View>
+          {editing ? (
+            <AccountEdit
+              username={username}
+              onSave={(newName) => {
+                setUsername(newName);
+                setEditing(false);
+              }}
+              onCancel={() => setEditing(false)}
+            />
+          ) : (
+            <>
+              <Text style={styles.counterText}>Welcome, {username}!</Text>
+              <Text style={styles.counterText}>Counter: {count}</Text>
+              <View style={styles.buttonRow}>
+                <Button title="-" onPress={() => setCount(count - 1)} />
+                <Button title="+" onPress={() => setCount(count + 1)} />
+              </View>
+              <View style={{ height: 10 }} />
+              <Button title="Edit Account" onPress={() => setEditing(true)} />
+            </>
+          )}
         </View>
       )}
     </SafeAreaView>
