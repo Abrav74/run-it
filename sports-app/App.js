@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { SafeAreaView, View, Text, Button, StyleSheet } from "react-native";
 import AccountCreation from "./AccountCreation";
 import AccountEdit from "./AccountEdit";
+import TournamentCreation from "./TournamentCreation";
+import TournamentList from "./TournamentList";
 
 export default function App() {
   const [accountCreated, setAccountCreated] = useState(false);
   const [username, setUsername] = useState("");
   const [count, setCount] = useState(0);
   const [editing, setEditing] = useState(false);
+  const [showTournamentCreator, setShowTournamentCreator] = useState(false);
+  const [tournaments, setTournaments] = useState([]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,6 +43,24 @@ export default function App() {
               </View>
               <View style={{ height: 10 }} />
               <Button title="Edit Account" onPress={() => setEditing(true)} />
+              <View style={{ height: 10 }} />
+              {showTournamentCreator ? (
+                <TournamentCreation
+                  onCreate={(t) => {
+                    setTournaments((prev) => [t, ...prev]);
+                    setShowTournamentCreator(false);
+                  }}
+                  onCancel={() => setShowTournamentCreator(false)}
+                />
+              ) : (
+                <Button
+                  title="Create Tournament"
+                  onPress={() => setShowTournamentCreator(true)}
+                />
+              )}
+
+              <View style={{ height: 12 }} />
+              <TournamentList tournaments={tournaments} />
             </>
           )}
         </View>
