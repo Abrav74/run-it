@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, Image } from "react-native";
 
 export default function TournamentList({ tournaments }) {
   if (!tournaments || tournaments.length === 0) {
@@ -16,6 +16,11 @@ export default function TournamentList({ tournaments }) {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <View style={styles.item}>
+          {item.imageUrl ? (
+            <Image source={{ uri: item.imageUrl }} style={styles.thumb} />
+          ) : (
+            <View style={styles.placeholder} />
+          )}
           <Text style={styles.name}>{item.name}</Text>
           {item.date ? <Text style={styles.date}>{item.date}</Text> : null}
           {item.description ? (
@@ -37,4 +42,12 @@ const styles = StyleSheet.create({
   name: { fontWeight: "bold" },
   date: { color: "#666" },
   desc: { marginTop: 4 },
+  thumb: { width: "100%", height: 140, borderRadius: 8, marginBottom: 8 },
+  placeholder: {
+    width: "100%",
+    height: 140,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+    marginBottom: 8,
+  },
 });

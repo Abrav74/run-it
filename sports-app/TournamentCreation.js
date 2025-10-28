@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Image } from "react-native";
 
 export default function TournamentCreation({ onCreate, onCancel }) {
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState("");
 
   const handleCreate = () => {
@@ -19,6 +20,7 @@ export default function TournamentCreation({ onCreate, onCancel }) {
       name: trimmed,
       date: date.trim(),
       description: description.trim(),
+      imageUrl: imageUrl ? imageUrl.trim() : undefined,
     };
     onCreate(tournament);
   };
@@ -45,6 +47,20 @@ export default function TournamentCreation({ onCreate, onCancel }) {
         onChangeText={setDescription}
         multiline
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Image URL (optional)"
+        value={imageUrl}
+        onChangeText={setImageUrl}
+        autoCapitalize="none"
+      />
+      {imageUrl ? (
+        <Image
+          source={{ uri: imageUrl }}
+          style={styles.preview}
+          resizeMode="cover"
+        />
+      ) : null}
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.buttonRow}>
         <Button title="Create" onPress={handleCreate} />
@@ -82,4 +98,5 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   error: { color: "red", marginBottom: 8 },
+  preview: { width: 280, height: 140, borderRadius: 8, marginBottom: 8 },
 });
