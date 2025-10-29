@@ -4,6 +4,7 @@ import AccountCreation from "./AccountCreation";
 import AccountEdit from "./AccountEdit";
 import TournamentCreation from "./TournamentCreation";
 import TournamentList from "./TournamentList";
+import TournamentBrowse from "./TournamentBrowse";
 
 export default function App() {
   const [accountCreated, setAccountCreated] = useState(false);
@@ -12,6 +13,7 @@ export default function App() {
   const [editing, setEditing] = useState(false);
   const [showTournamentCreator, setShowTournamentCreator] = useState(false);
   const [tournaments, setTournaments] = useState([]);
+  const [showBrowse, setShowBrowse] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,6 +63,17 @@ export default function App() {
 
               <View style={{ height: 12 }} />
               <TournamentList tournaments={tournaments} />
+              <View style={{ height: 12 }} />
+              <Button
+                title="Browse Tournaments"
+                onPress={() => setShowBrowse(true)}
+              />
+              {showBrowse ? (
+                <TournamentBrowse
+                  tournaments={tournaments}
+                  onClose={() => setShowBrowse(false)}
+                />
+              ) : null}
             </>
           )}
         </View>
