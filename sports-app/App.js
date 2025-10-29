@@ -1,84 +1,108 @@
 import React, { useState } from "react";
 import { SafeAreaView, View, Text, Button, StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AccountCreation from "./AccountCreation";
 import AccountEdit from "./AccountEdit";
 import TournamentCreation from "./TournamentCreation";
 import TournamentList from "./TournamentList";
 import TournamentBrowse from "./TournamentBrowse";
 
+const Stack = createNativeStackNavigator();
+
 export default function App() {
-  const [accountCreated, setAccountCreated] = useState(false);
   const [username, setUsername] = useState("");
   const [count, setCount] = useState(0);
-  const [editing, setEditing] = useState(false);
-  const [showTournamentCreator, setShowTournamentCreator] = useState(false);
   const [tournaments, setTournaments] = useState([]);
-  const [showBrowse, setShowBrowse] = useState(false);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {!accountCreated ? (
-        <AccountCreation
-          onAccountCreated={(uname) => {
-            setAccountCreated(true);
-            setUsername(uname);
-          }}
-        />
-      ) : (
-        <View style={styles.counterContainer}>
-          {editing ? (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="SignUp">
+        <Stack.Screen name="SignUp" options={{ title: "Sign Up" }}>
+          {(props) => (
+            <SafeAreaView style={styles.container}>
+              <AccountCreation
+                onAccountCreated={(uname) => {
+                  setUsername(uname);
+                  props.navigation.replace("Home", { username: uname });
+                }}
+              />
+            </SafeAreaView>
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Home" options={{ title: "Home" }}>
+          {(props) => (
+            <SafeAreaView style={styles.container}>
+              <View style={styles.counterContainer}>
+                <Text style={styles.counterText}>
+                  Welcome, {username || props.route.params?.username}!
+                </Text>
+                <Text style={styles.counterText}>Counter: {count}</Text>
+                <View style={styles.buttonRow}>
+                  <Button title="-" onPress={() => setCount((c) => c - 1)} />
+                  <Button title="+" onPress={() => setCount((c) => c + 1)} />
+                </View>
+                <View style={{ height: 10 }} />
+                <Button
+                  title="Edit Account"
+                  onPress={() => props.navigation.navigate("EditAccount")}
+                />
+                <View style={{ height: 10 }} />
+                <Button
+                  title="Create Tournament"
+                  onPress={() => props.navigation.navigate("CreateTournament")}
+                />
+                <View style={{ height: 10 }} />
+                <Button
+                  title="Browse Tournaments"
+                  onPress={() => props.navigation.navigate("Browse")}
+                />
+                <View style={{ height: 12 }} />
+                <TournamentList tournaments={tournaments} />
+              </View>
+            </SafeAreaView>
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="EditAccount" options={{ title: "Edit Account" }}>
+          {(props) => (
             <AccountEdit
               username={username}
               onSave={(newName) => {
                 setUsername(newName);
-                setEditing(false);
+                props.navigation.goBack();
               }}
-              onCancel={() => setEditing(false)}
+              onCancel={() => props.navigation.goBack()}
             />
-          ) : (
-            <>
-              <Text style={styles.counterText}>Welcome, {username}!</Text>
-              <Text style={styles.counterText}>Counter: {count}</Text>
-              <View style={styles.buttonRow}>
-                <Button title="-" onPress={() => setCount(count - 1)} />
-                <Button title="+" onPress={() => setCount(count + 1)} />
-              </View>
-              <View style={{ height: 10 }} />
-              <Button title="Edit Account" onPress={() => setEditing(true)} />
-              <View style={{ height: 10 }} />
-              {showTournamentCreator ? (
-                <TournamentCreation
-                  onCreate={(t) => {
-                    setTournaments((prev) => [t, ...prev]);
-                    setShowTournamentCreator(false);
-                  }}
-                  onCancel={() => setShowTournamentCreator(false)}
-                />
-              ) : (
-                <Button
-                  title="Create Tournament"
-                  onPress={() => setShowTournamentCreator(true)}
-                />
-              )}
-
-              <View style={{ height: 12 }} />
-              <TournamentList tournaments={tournaments} />
-              <View style={{ height: 12 }} />
-              <Button
-                title="Browse Tournaments"
-                onPress={() => setShowBrowse(true)}
-              />
-              {showBrowse ? (
-                <TournamentBrowse
-                  tournaments={tournaments}
-                  onClose={() => setShowBrowse(false)}
-                />
-              ) : null}
-            </>
           )}
-        </View>
-      )}
-    </SafeAreaView>
+        </Stack.Screen>
+
+        <Stack.Screen
+          name="CreateTournament"
+          options={{ title: "Create Tournament" }}
+        >
+          {(props) => (
+            <TournamentCreation
+              onCreate={(t) => {
+                setTournaments((prev) => [t, ...prev]);
+                props.navigation.goBack();
+              }}
+              onCancel={() => props.navigation.goBack()}
+            />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Browse" options={{ title: "Browse" }}>
+          {(props) => (
+            <TournamentBrowse
+              tournaments={tournaments}
+              onClose={() => props.navigation.goBack()}
+            />
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
