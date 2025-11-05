@@ -111,6 +111,111 @@ app.put("/accounts/:username", async (req, res) => {
 // Simple health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
+// --- Tournament endpoints ---
+const TOURNAMENT_FILE = path.join(__dirname, "tournaments.json");
+
+async function readTournaments() {
+  try {
+    const raw = await fs.readFile(TOURNAMENT_FILE, "utf8");
+    return JSON.parse(raw);
+  } catch (e) {
+    return { tournaments: [] };
+  }
+}
+
+async function writeTournaments(db) {
+  await fs.writeFile(TOURNAMENT_FILE, JSON.stringify(db, null, 2), "utf8");
+}
+
+// List tournaments
+app.get("/tournaments", async (req, res) => {
+  const db = await readTournaments();
+  res.json(db.tournaments || []);
+});
+
+// Get tournament by id
+app.get("/tournaments/:id", async (req, res) => {
+  const { id } = req.params;
+  const db = await readTournaments();
+  const t = db.tournaments.find((x) => x.id === id);
+  if (!t) return res.status(404).json({ message: "Tournament not found" });
+  res.json(t);
+});
+
+// Create tournament
+app.post("/tournaments", async (req, res) => {
+  let { name, date, description, imageUrl, createdBy } = req.body || {};
+  name = typeof name === "string" ? name.trim() : "";
+  date = typeof date === "string" ? date.trim() : undefined;
+  description =
+    typeof description === "string" ? description.trim() : undefined;
+  imageUrl = typeof imageUrl === "string" ? imageUrl.trim() : undefined;
+
+  if (!name || name.length < 3)
+    return res
+      .status(400)
+      .json({ message: "name must be at least 3 characters" });
+
+  const db = await readTournaments();
+  const id = Date.now().toString();
+  const tournament = {
+    id,
+    name,
+    date,
+    description,
+    imageUrl,
+    createdBy: createdBy || null,
+    createdAt: new Date().toISOString(),
+  };
+
+  db.tournaments.push(tournament);
+  await writeTournaments(db);
+  res.status(201).json(tournament);
+});
+
+// Update tournament
+app.put("/tournaments/:id", async (req, res) => {
+  const { id } = req.params;
+  let { name, date, description, imageUrl } = req.body || {};
+  name = typeof name === "string" ? name.trim() : undefined;
+  date = typeof date === "string" ? date.trim() : undefined;
+  description =
+    typeof description === "string" ? description.trim() : undefined;
+  imageUrl = typeof imageUrl === "string" ? imageUrl.trim() : undefined;
+
+  const db = await readTournaments();
+  const idx = db.tournaments.findIndex((t) => t.id === id);
+  if (idx === -1)
+    return res.status(404).json({ message: "Tournament not found" });
+
+  if (name) {
+    if (name.length < 3)
+      return res
+        .status(400)
+        .json({ message: "name must be at least 3 characters" });
+    db.tournaments[idx].name = name;
+  }
+  if (date !== undefined) db.tournaments[idx].date = date;
+  if (description !== undefined) db.tournaments[idx].description = description;
+  if (imageUrl !== undefined) db.tournaments[idx].imageUrl = imageUrl;
+  db.tournaments[idx].updatedAt = new Date().toISOString();
+
+  await writeTournaments(db);
+  res.json(db.tournaments[idx]);
+});
+
+// Delete tournament
+app.delete("/tournaments/:id", async (req, res) => {
+  const { id } = req.params;
+  const db = await readTournaments();
+  const idx = db.tournaments.findIndex((t) => t.id === id);
+  if (idx === -1)
+    return res.status(404).json({ message: "Tournament not found" });
+  const removed = db.tournaments.splice(idx, 1)[0];
+  await writeTournaments(db);
+  res.json(removed);
+});
+
 app.listen(PORT, () => {
   console.log(`Backend listening on http://localhost:${PORT}`);
 });

@@ -31,3 +31,13 @@ The server runs on port 3000 by default. Endpoints:
 - PUT /accounts/:username -> update account { username?, password? }
 
 Note: passwords are stored in plaintext in `accounts.json` for simplicity — this is only for local testing. For production, use a real database and proper password hashing.
+
+Tournament endpoints:
+
+- GET /tournaments -> list all tournaments
+- GET /tournaments/:id -> get a tournament by id
+- POST /tournaments -> create a tournament { name, date?, description?, imageUrl?, createdBy? }
+- PUT /tournaments/:id -> update tournament fields { name?, date?, description?, imageUrl? }
+- DELETE /tournaments/:id -> delete a tournament
+
+Tournaments are stored in `tournaments.json` as a simple local datastore for development.
