@@ -72,6 +72,23 @@ app.post("/accounts", async (req, res) => {
   res.status(201).json(safeAccount({ username }));
 });
 
+// Login endpoint
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password)
+    return res.status(400).json({ message: "username and password required" });
+
+  const db = await readDB();
+  const acc = db.accounts.find((a) => a.username === username);
+  if (!acc) return res.status(401).json({ message: "invalid credentials" });
+
+  const ok = await bcrypt.compare(password, acc.passwordHash || "");
+  if (!ok) return res.status(401).json({ message: "invalid credentials" });
+
+  // For simplicity we just return username; a real app should return a token/session
+  res.json({ username: acc.username });
+});
+
 // Update account (username or password) with validation
 app.put("/accounts/:username", async (req, res) => {
   const { username } = req.params;

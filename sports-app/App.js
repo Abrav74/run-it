@@ -3,6 +3,7 @@ import { SafeAreaView, View, Text, Button, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AccountCreation from "./AccountCreation";
+import AccountLogin from "./AccountLogin";
 import AccountEdit from "./AccountEdit";
 import TournamentCreation from "./TournamentCreation";
 import TournamentList from "./TournamentList";
@@ -23,6 +24,24 @@ export default function App() {
             <SafeAreaView style={styles.container}>
               <AccountCreation
                 onAccountCreated={(uname) => {
+                  setUsername(uname);
+                  props.navigation.replace("Home", { username: uname });
+                }}
+              />
+              <View style={{ height: 10 }} />
+              <Button
+                title="Already have an account? Log in"
+                onPress={() => props.navigation.navigate("Login")}
+              />
+            </SafeAreaView>
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Login" options={{ title: "Log in" }}>
+          {(props) => (
+            <SafeAreaView style={styles.container}>
+              <AccountLogin
+                onLogin={(uname) => {
                   setUsername(uname);
                   props.navigation.replace("Home", { username: uname });
                 }}
