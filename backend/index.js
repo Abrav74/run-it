@@ -144,10 +144,27 @@ async function writeTournaments(db) {
   await fs.writeFile(TOURNAMENT_FILE, JSON.stringify(db, null, 2), "utf8");
 }
 
-// List tournaments
+// List tournaments with optional server-side filtering: ?q=searchText&createdBy=username
 app.get("/tournaments", async (req, res) => {
+  const { q, createdBy } = req.query || {};
   const db = await readTournaments();
-  res.json(db.tournaments || []);
+  let list = db.tournaments || [];
+
+  if (createdBy) {
+    list = list.filter((t) => t.createdBy === createdBy);
+  }
+
+  if (q) {
+    const qq = String(q).trim().toLowerCase();
+    list = list.filter((t) => {
+      const name = (t.name || "").toLowerCase();
+      const date = (t.date || "").toLowerCase();
+      const desc = (t.description || "").toLowerCase();
+      return name.includes(qq) || date.includes(qq) || desc.includes(qq);
+    });
+  }
+
+  res.json(list);
 });
 
 // Get tournament by id

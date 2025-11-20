@@ -35,6 +35,7 @@ Note: passwords are stored in plaintext in `accounts.json` for simplicity — th
 Tournament endpoints:
 
 - GET /tournaments -> list all tournaments
+- GET /tournaments -> list all tournaments (supports query params `q` for search and `createdBy` to filter by creator)
 - GET /tournaments/:id -> get a tournament by id
 - POST /tournaments -> create a tournament { name, date?, description?, imageUrl?, createdBy? }
 - PUT /tournaments/:id -> update tournament fields { name?, date?, description?, imageUrl? }
